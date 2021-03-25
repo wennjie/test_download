@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <title>下载 冰红茶 App</title>
+    <link rel="icon" type="image/png" href="/api/file/default.png" sizes="16x16">
+    <link rel="stylesheet" href="css/download.css">
+    <script src="./js/qrcode.min.js"></script>
+    <script src="./js/axios.js"></script>
+    <style>
+        .qrcode-box img {
+            margin: 0 auto;
+            width: 200px;
+            height: 200px;
+        }
+
+        .qrcode-box {
+            margin-bottom: 10px;
+        }
+
+        .zoom {
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            background: rgba(0, 0, 0, 0.7);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .zoom img {
+            width: 200px;
+            position: fixed;
+            right: 20px;
+            top: 10px;
+        }
+    </style>
+
+    <script>
+        var protocol = window.location.protocol
+        var host = window.location.host
+        var download = protocol + '//' + host + "/download";
+        var ios = protocol + '//' + '28.ms/app/app_new.plist'
+
+        function down(type) {
+            switch (type) {
+                case 'ios':
+                    location.href = '/'
+                    // location.href = 'itms-services://?action=download-manifest&url=' + ios
+                    // setTimeout(function () {
+                    //     location.href = 'https://28.ms/pwa/redirect.mobileprovision';
+                    // }, 2000);
+                    break;
+                case 'android':
+                    location.href = 'https://28.ms/app/app_new.apk'
+                    break;
+                case 'pwa':
+
+                    if (document.getElementsByClassName('pwa')[0].innerText == '点击跳转安装') {
+                        location.href = 'https://28.ms/pwa/redirect.mobileprovision';
+                    }
+                    if (document.getElementsByClassName('pwa')[0].innerText == '轻量版App下载') {
+                        document.getElementsByClassName('pwa')[0].innerText = '安装中...'
+                        location.href = 'https://28.ms/pwa/app_new.mobileconfig';
+                        setTimeout(function () {
+                            document.getElementsByClassName('pwa')[0].innerText = '点击跳转安装'
+                        }, 4000);
+                    }
+                    break;
+            }
+        }
+    </script>
+
+
+</head>
+
+<body>
+    <div class="content hastip">
+        <div class="container">
+            <div class="oval oval1"></div>
+            <div class="oval oval2"></div>
+        </div>
+        <div class="logo"></div>
+        <div class="btn-container">
+            <div class="label">
+                <div class="title" id="title">冰红茶</div>
+                <div class="subtitle">信誉冰红茶，实力平台</div>
+            </div>
+
+            <div class="btn android" onclick="down('android')">
+                安卓版App下载
+            </div>
+            <div class="ios">
+                <!-- <div class="btn  pwa" style="background:#a0b5e6" onclick="down('pwa')">
+                    轻量版App下载
+                </div> -->
+                <div class="btn" onclick="down('ios')">
+                    轻量版App下载
+                </div>
+            </div>
+
+        </div>
+        <div class="qr btn-container">
+            <div class="qrcode-box">
+                <div id="qrcode"></div>
+            </div>
+            <p>扫一扫二维码下载App</p>
+        </div>
+        <div class="tips btn-container ios">
+            <div class="title">轻量版App下载安装教程</div>
+            <div class="step">1.点击「轻量版App下载」按钮，<br>然后点击浏览器下方中间的分享图标</div>
+            <img src="./images/1.jpg">
+            <div class="step">2.点击「添加到主屏幕」</div>
+            <img src="./images/2.jpg">
+            <div class="step">3.点击右上角「添加」
+                <br>
+                <span class="subtip">然后返回桌面即可打开App。</span>
+            </div>
+            <img src="./images/3.jpg">
+        </div>
+
+
+        <div class="zoom">
+            <img src="./images/go-safari.png" alt="">
+        </div>
+        <script>
+
+            axios.get("/api/systemConfig/list", {
+                params: {
+                    where: {
+                        status: 1
+                    },
+                    limit: {
+                        num: 100
+                    }
+                }
+            }).then(res => {
+                var code = res.data.code
+                var data = res.data.data.data
+                if (code == 200) {
+                    for (let i in data) {
+                        if (data[i].key == "app_name") {
+                            document.title = `下载 ${data[i].value} App`
+                            document.getElementById('title').innerText = data[i].value
+                        }
+                    }
+                }
+            })
+
+
+        </script>
+        <script>
+            var u = ua = navigator.userAgent;
+            if (!!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
+                document.getElementsByClassName('android')[0].className = 'hide';
+                document.getElementsByClassName('qr')[0].className = 'hide';
+                if (/Safari/.test(ua)) {
+                    document.getElementsByClassName('zoom')[0].className = 'hide';
+                } else {
+                    // document.getElementsByClassName('android')[0].className = 'hide';
+                }
+
+            } else if (u.indexOf('Android') > -1) {
+                document.getElementsByClassName('ios')[0].className = 'hide';
+                document.getElementsByClassName('tips')[0].className = 'hide';
+                document.getElementsByClassName('qr')[0].className = 'hide';
+                document.getElementsByClassName('zoom')[0].className = 'hide';
+
+            } else {
+                document.getElementsByClassName('ios')[0].className = 'hide';
+                document.getElementsByClassName('tips')[0].className = 'hide';
+                document.getElementsByClassName('android')[0].className = 'hide';
+                document.getElementsByClassName('zoom')[0].className = 'hide';
+            }
+        </script>
+        <script>
+            var qrcode = new QRCode("qrcode", {
+                text: download,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        </script>
+        <footer>Copyright &copy; 2020 冰红茶</footer>
+    </div>
+</body>
+
+</html>
